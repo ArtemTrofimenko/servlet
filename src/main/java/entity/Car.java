@@ -1,10 +1,11 @@
 package entity;
 
+import interfaces.CurrencyStrategy;
 import interfaces.MileageAdapter;
-import interfaces.PriceAdapter;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
-public class Car implements MileageAdapter, PriceAdapter {
+public abstract class Car implements MileageAdapter{
+  private CurrencyStrategy currencyStrategy;
   private String mark;
   private String model;
   private String price;
@@ -12,13 +13,11 @@ public class Car implements MileageAdapter, PriceAdapter {
   private String page;
 
   @Override public String toString() {
-    return "Car{" +
-          "mark='" + mark + '\'' +
-          ", model='" + model + '\'' +
-          ", price='" + price + '\'' +
-          ", mileage='" + mileage + '\'' +
-          ", page='" + page + '\'' +
-          '}';
+    return "{\"mark\": \"" + mark + "\"" +
+          ",\"model\": \"" + model + "\"" +
+          ", \"price\": \"" + price + "\"" +
+          ", \"mileage\": \"" + mileage + "\"" +
+          ", \"page\": \"" + page + "\"}";
   }
 
   @JsonIgnore
@@ -29,21 +28,6 @@ public class Car implements MileageAdapter, PriceAdapter {
   @JsonIgnore
   @Override public String getMileageInKm() {
     return Integer.parseInt(mileage) + " kilometers";
-  }
-
-  @JsonIgnore
-  @Override public String getUahPrice() {
-    return Double.parseDouble(price) * 26.7 + " UAH";
-  }
-
-  @JsonIgnore
-  @Override public String getEuroPrice() {
-    return Double.parseDouble(price) * 0.84 + " EURO";
-  }
-
-  @JsonIgnore
-  @Override public String getUsdPrice() {
-    return price + " USD";
   }
 
   public Car() {
@@ -81,6 +65,14 @@ public class Car implements MileageAdapter, PriceAdapter {
     this.mileage = mileage;
   }
 
+  public CurrencyStrategy getCurrencyStrategy() {
+    return currencyStrategy;
+  }
+
+  public void setCurrencyStrategy(CurrencyStrategy currencyStrategy) {
+    this.currencyStrategy = currencyStrategy;
+  }
+
   public String getPage() {
     return page;
   }
@@ -89,41 +81,21 @@ public class Car implements MileageAdapter, PriceAdapter {
     this.page = page;
   }
 
-  public static class Builder {
-    private final Car builtCar;
+  public abstract static class CarBuilder {
 
-    public Builder() {
-      builtCar = new Car();
-    }
+    public abstract CarBuilder mark(String mark);
 
-    public Builder mark(String mark) {
-      builtCar.setMark(mark);
-      return this;
-    }
+    public abstract CarBuilder model(String model);
 
-    public Builder model(String model) {
-      builtCar.setModel(model);
-      return this;
-    }
+    public abstract CarBuilder price(String price);
 
-    public Builder price(String price) {
-      builtCar.setPrice(price);
-      return this;
-    }
+    public abstract CarBuilder mileage(String mileage);
 
-    public Builder mileage(String mileage) {
-      builtCar.setMileage(mileage);
-      return this;
-    }
+    public abstract CarBuilder page(String page);
 
-    public Builder page(String page) {
-      builtCar.setPage(page);
-      return this;
-    }
+    public abstract CarBuilder currencyStrategy(CurrencyStrategy currencyStrategy);
 
-    public Car build() {
-      return builtCar;
-    }
+    public abstract Car build();
   }
 
 }
